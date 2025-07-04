@@ -65,4 +65,5 @@ jobs:
           script: |
             docker run -d -p 8000:8000 \
               --name server-performance-monitor-web \
+              -e MONGO_URI=${{ secrets.MONGO_URI }} \
               fcaceresc/server-performance-monitor-web:latest

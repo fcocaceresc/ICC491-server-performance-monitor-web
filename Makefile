@@ -3,12 +3,8 @@ CONTAINER_NAME := server-performance-monitor-web
 PORT := 8000
 
 up:
-	docker build -t $(IMAGE_NAME) .
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME)
+	docker compose build --no-cache
+	docker compose up -d
 
 down:
-	docker stop $(CONTAINER_NAME) || true
-	docker rm $(CONTAINER_NAME) || true
-
-clean: down
-	docker rmi $(IMAGE_NAME) || true
+	docker compose down -v --remove-orphans
