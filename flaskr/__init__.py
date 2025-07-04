@@ -34,6 +34,11 @@ def create_app(test_config=None):
             'message': 'OK'
         }), 200
 
+    @app.route('/system-metrics', methods=['GET'])
+    def get_system_metrics():
+        system_metrics = list(mongo.db.system_metrics.find())
+        return jsonify(system_metrics), 200
+
     @app.route('/system-metrics', methods=['POST'])
     def create_system_metrics():
         system_metrics_data = request.json
