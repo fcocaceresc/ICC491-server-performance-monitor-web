@@ -65,12 +65,40 @@ async function fetchMetricsAndUpdateChart() {
     updateChart(data);
 }
 
+async function fetchLogs() {
+    const response = await fetch(`/logs?limit=15`);
+    return await response.json();
+}
+
+function updateLogs(logs) {
+    const logsList = document.getElementById('logs-list');
+    logsList.innerHTML = '';
+    logs.forEach(log => {
+        const logItem = document.createElement('li');
+        logItem.textContent = formatLog(log);
+        logsList.appendChild(logItem);
+    });
+}
+
+async function fetchAndUpdateLogs() {
+    const logs = await fetchLogs();
+    updateLogs(logs);
+}
+
+function formatLog(log) {
+    return `${log.timestamp} ${log.hostname} ${log.process}[${log.pid}]: ${log.message}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     createChart();
     fetchMetricsAndUpdateChart();
+    fetchAndUpdateLogs();
 
     const socket = io();
     socket.on('new_system_metrics', () => {
         fetchMetricsAndUpdateChart();
+    });
+    socket.on('new_logs', () => {
+        fetchAndUpdateLogs();
     });
 });

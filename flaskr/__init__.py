@@ -75,6 +75,9 @@ def create_app(test_config=None):
         if isinstance(log_data, list):
             result = mongo.db.logs.insert_many(log_data)
             created_logs = list(mongo.db.logs.find({'_id': {'$in': result.inserted_ids}}))
+
+            socketio.emit('new_logs')
+
             for log in created_logs:
                 log['_id'] = str(log['_id'])
             return jsonify({
