@@ -52,4 +52,34 @@ def create_app(test_config=None):
             'resource': created_system_metrics
         }), 201
 
+    @app.route('/logs', methods=['GET'])
+    def get_logs():
+        logs = list(mongo.db.logs.find())
+        return jsonify(logs), 200
+
+    @app.route('/logs', methods=['POST'])
+    def create_log():
+        log_data = request.json
+        if isinstance(log_data, list):
+            result = mongo.db.logs.insert_many(log_data)
+            created_logs = list(mongo.db.logs.find({'_id': {'$in': result.inserted_ids}}))
+            for log in created_logs:
+                log['_id'] = str(log['_id'])
+            return jsonify({
+                'timestamp': datetime.datetime.now(datetime.UTC).isoformat(),
+                'status': 201,
+                'message': 'Created',
+                'resource': created_logs
+            }), 201
+        else:
+            inserted_log = mongo.db.logs.insert_one(log_data)
+            created_log = mongo.db.logs.find_one({'_id': inserted_log.inserted_id})
+            created_log['_id'] = str(created_log['_id'])
+            return jsonify({
+                'timestamp': datetime.datetime.now(datetime.UTC).isoformat(),
+                'status': 201,
+                'message': 'Created',
+                'resource': created_log
+            }), 201
+
     return app
