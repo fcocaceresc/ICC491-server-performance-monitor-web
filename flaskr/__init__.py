@@ -36,7 +36,9 @@ def create_app(test_config=None):
 
     @app.route('/system-metrics', methods=['GET'])
     def get_system_metrics():
-        system_metrics = list(mongo.db.system_metrics.find())
+        limit = request.args.get('limit', type=int, default=10)
+        system_metrics = list(mongo.db.system_metrics.find().sort('_id', -1).limit(limit))
+        system_metrics.reverse()
         return jsonify(system_metrics), 200
 
     @app.route('/system-metrics', methods=['POST'])
@@ -54,7 +56,9 @@ def create_app(test_config=None):
 
     @app.route('/logs', methods=['GET'])
     def get_logs():
-        logs = list(mongo.db.logs.find())
+        limit = request.args.get('limit', type=int, default=10)
+        logs = list(mongo.db.logs.find().sort('_id', -1).limit(limit))
+        logs.reverse()
         return jsonify(logs), 200
 
     @app.route('/logs', methods=['POST'])
