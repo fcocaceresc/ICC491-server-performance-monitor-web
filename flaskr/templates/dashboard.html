@@ -17,6 +17,21 @@
     <h1>Logs</h1>
     <ul id="logs-list"></ul>
 </div>
+<div id="processes-snapshot-container">
+    <h1>Processes</h1>
+    <table id="processes-snapshot-table">
+        <thead>
+            <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>CPU usage</th>
+                <th>Memory usage</th>
+            </tr>
+        </thead>
+        <tbody id="processes-snapshot-body"></tbody>
+    </table>
+</div>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

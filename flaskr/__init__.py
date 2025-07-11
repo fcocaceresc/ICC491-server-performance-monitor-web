@@ -97,6 +97,27 @@ def create_app(test_config=None):
                 'resource': created_log
             }), 201
 
+    @app.route('/processes-snapshots', methods=['GET'])
+    def get_processes_snapshots():
+        processes_snapshot = list(mongo.db.processes.find().sort('_id', -1).limit(1))
+        return jsonify(processes_snapshot), 200
+
+    @app.route('/processes-snapshots', methods=['POST'])
+    def create_processes_snapshot():
+        processes_snapshot_data = request.json
+        inserted_process_snapshot = mongo.db.processes.insert_one(processes_snapshot_data)
+        created_process_snapshot = mongo.db.processes.find_one({'_id': inserted_process_snapshot.inserted_id})
+        created_process_snapshot['_id'] = str(created_process_snapshot['_id'])
+
+        socketio.emit('new_processes_snapshot')
+
+        return jsonify({
+            'timestamp': datetime.datetime.now(datetime.UTC).isoformat(),
+            'status': 201,
+            'message': 'Created',
+            'resource': created_process_snapshot
+        }), 201
+
     @app.route('/', methods=['GET'])
     def dashboard():
         return render_template('dashboard.html')

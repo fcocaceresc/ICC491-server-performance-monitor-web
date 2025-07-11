@@ -89,10 +89,38 @@ function formatLog(log) {
     return `${log.timestamp} ${log.hostname} ${log.process}[${log.pid}]: ${log.message}`;
 }
 
+async function fetchProcessesSnapshot() {
+    const response = await fetch(`/processes-snapshots?limit=1`);
+    return await response.json();
+}
+
+function updateProcessesSnapshotTable(snapshot) {
+    const tbody = document.getElementById('processes-snapshot-body');
+    tbody.innerHTML = '';
+    const processes = snapshot[0].processes;
+    processes.forEach(process => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${process.pid}</td>
+            <td>${process.name}</td>
+            <td>${process.status || ''}</td>
+            <td>${process.cpu_usage}%</td>
+            <td>${process.memory_usage}%</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function fetchAndUpdateProcessesSnapshotTable() {
+    const processes_snapshot = await fetchProcessesSnapshot();
+    updateProcessesSnapshotTable(processes_snapshot);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     createChart();
     fetchMetricsAndUpdateChart();
     fetchAndUpdateLogs();
+    fetchAndUpdateProcessesSnapshotTable()
 
     const socket = io();
     socket.on('new_system_metrics', () => {
@@ -100,5 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     socket.on('new_logs', () => {
         fetchAndUpdateLogs();
+    });
+    socket.on('new_processes_snapshot', () => {
+        fetchAndUpdateProcessesSnapshotTable();
     });
 });
