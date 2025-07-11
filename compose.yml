@@ -18,6 +18,7 @@ services:
     environment:
       - FLASK_APP=flaskr
       - MONGO_URI=mongodb://db:27017/server_performance_monitor
+      - GEMINI_API_KEY=key
     command: [ "gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:8000", "flaskr:create_app()" ]
 
 volumes:

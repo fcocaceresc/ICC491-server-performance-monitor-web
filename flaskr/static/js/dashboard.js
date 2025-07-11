@@ -133,3 +133,26 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchAndUpdateProcessesSnapshotTable();
     });
 });
+
+const promptForm = document.getElementById('prompt-form');
+const promptInput = document.getElementById('prompt-input');
+const chatHistory = document.getElementById('chat-history');
+
+promptForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const prompt = promptInput.value.trim();
+    const response = await fetch('/chatbot', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({prompt})
+    });
+    const data = await response.json();
+    appendChat(prompt, data.answer);
+    promptInput.value = '';
+});
+
+function appendChat(userQuestion, aiAnswer) {
+    const div = document.createElement('div');
+    div.innerHTML = `<strong>You:</strong> ${userQuestion}<br><strong>AI:</strong> ${aiAnswer}`;
+    chatHistory.appendChild(div)
+}

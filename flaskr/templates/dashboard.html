@@ -32,6 +32,14 @@
         <tbody id="processes-snapshot-body"></tbody>
     </table>
 </div>
+<div id="chatbot-container">
+    <h1>Chatbot</h1>
+    <div id="chat-history"></div>
+    <form id="prompt-form">
+        <input type="text" id="prompt-input" placeholder="Enter your question" required>
+        <button type="submit">Send</button>
+    </form>
+</div>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

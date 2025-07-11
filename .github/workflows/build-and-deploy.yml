@@ -66,4 +66,5 @@ jobs:
             docker run -d -p 8000:8000 \
               --name server-performance-monitor-web \
               -e MONGO_URI=${{ secrets.MONGO_URI }} \
+              -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               fcaceresc/server-performance-monitor-web:latest
