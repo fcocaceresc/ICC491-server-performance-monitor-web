@@ -9,4 +9,4 @@ COPY flaskr /app/flaskr
 
 ENV FLASK_APP=flaskr
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0", "flaskr:create_app()"]
+CMD ["gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:8000", "flaskr:create_app()"]

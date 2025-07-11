@@ -1,10 +1,13 @@
 import datetime
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_pymongo import PyMongo
+from flask_socketio import SocketIO
 
 mongo = PyMongo()
+
+socketio = SocketIO()
 
 
 def create_app(test_config=None):
@@ -25,6 +28,8 @@ def create_app(test_config=None):
         pass
 
     mongo.init_app(app)
+
+    socketio.init_app(app)
 
     @app.route('/status')
     def status():
@@ -47,6 +52,9 @@ def create_app(test_config=None):
         inserted_system_metrics = mongo.db.system_metrics.insert_one(system_metrics_data)
         created_system_metrics = mongo.db.system_metrics.find_one({'_id': inserted_system_metrics.inserted_id})
         created_system_metrics['_id'] = str(created_system_metrics['_id'])
+
+        socketio.emit('new_system_metrics')
+
         return jsonify({
             'timestamp': datetime.datetime.now(datetime.UTC).isoformat(),
             'status': 201,
@@ -85,5 +93,9 @@ def create_app(test_config=None):
                 'message': 'Created',
                 'resource': created_log
             }), 201
+
+    @app.route('/', methods=['GET'])
+    def dashboard():
+        return render_template('dashboard.html')
 
     return app
